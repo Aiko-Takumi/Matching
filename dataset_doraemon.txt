@@ -1,0 +1,26 @@
+Doraemon is a robot.
+Doraemon likes dorayaki.
+Doraemon has many useful tools.
+
+Nobita is a boy.
+Nobita is stupid.
+Nobita likes Sizuka.
+Nobita relies on Doraemon.
+
+Sizuka is a girl.
+Sizuka is cute.
+Sizuka is bad at playing the violin.
+
+Jyaian is a boy.
+Jyaian is bully.
+Jyaian is fat.
+Jyaian is afraid of his mother.
+
+Suneo is a boy.
+Suneo is rich.
+Suneo and Jyaian are good friends.
+
+Dorami is a robot.
+Dorami and Doraemon are brothers.
+
+
