@@ -43,26 +43,55 @@
   ***/
 
 import java.util.*;
+import java.io.*;
 
 class Unify {
     public static void main(String arg[]){
-        if(arg.length != 1){//1に変更
-            System.out.println("Usgae : % Unify [string1]");
+        if(arg.length < 1){//1に変更
+            System.out.println("Usgae : % Unify [string1] ([string2] ...)");
         } else {
             try {    // ファイル読み込みに失敗した時の例外処理のためのtry-catch構文
                 String fileName = "hoge.txt"; // ファイル名指定
 
-                // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
-                BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
 
-                // 変数lineに1行ずつ読み込むfor文
-                for (String line = in.readLine(); line != null; line = in.readLine()) {
-                    boolean result = (new Unifier()).unify(arg[0],line);
-                    if(result == true) {
-                        System.out.println(result);
+                List<Unifier> unifiers = new ArrayList<>();
+                for(String query : arg){
+                    // 変数lineに1行ずつ読み込むfor文
+                    if(unifiers.size() == 0){
+                        // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
+                        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
+                        for (String line = in.readLine(); line != null; line = in.readLine()) {
+                        // boolean result = (new Unifier()).unify(arg[0],line);
+                            Unifier unifier = new Unifier();
+                            boolean result = unifier.unify(query,line);
+                            if(result == true) {
+                                System.out.println(query);
+                                System.out.println(result);
+                                unifiers.add(unifier);
+                                for(Unifier unif : unifiers){
+                                    System.out.println("\t"+unif.vars);
+                                }
+                            }
+                        }
+                        in.close();  // ファイルを閉じる
+                    }
+                    for(Unifier unifier : unifiers){
+                        // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
+                        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
+                        for (String line = in.readLine(); line != null; line = in.readLine()) {
+                        // boolean result = (new Unifier()).unify(arg[0],line);
+                            boolean result = unifier.unify(query,line);
+                            if(result == true) {
+                                System.out.println(query);
+                                System.out.println(result);
+                                for(Unifier unif : unifiers){
+                                    System.out.println("\t"+unif.vars);
+                                }
+                            }
+                        }
+                        in.close();  // ファイルを閉じる
                     }
                 }
-                in.close();  // ファイルを閉じる
             } catch (IOException e) {
                 e.printStackTrace(); // 例外が発生した所までのスタックトレースを表示
             }
@@ -82,6 +111,9 @@ class Unifier {
         vars = new HashMap<String,String>();
     }
 
+    public void setVars(HashMap<String, String> bindings){
+        this.vars = bindings;
+    }
     public boolean unify(String string1,String string2,HashMap<String,String> bindings){
         this.vars = bindings;
         return unify(string1,string2);
@@ -89,6 +121,7 @@ class Unifier {
 
     public boolean unify(String string1,String string2){
 
+        // System.out.println(string1+":"+string2);
         // 同じなら成功
         if(string1.equals(string2)) {
             System.out.println(string1);
