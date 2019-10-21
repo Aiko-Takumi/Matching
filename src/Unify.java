@@ -46,11 +46,28 @@ import java.util.*;
 
 class Unify {
     public static void main(String arg[]){
-    if(arg.length != 2){
-        System.out.println("Usgae : % Unify [string1] [string2]");
-    } else {
-        System.out.println((new Unifier()).unify(arg[0],arg[1]));
-    }
+        if(arg.length != 1){//1に変更
+            System.out.println("Usgae : % Unify [string1]");
+        } else {
+            try {    // ファイル読み込みに失敗した時の例外処理のためのtry-catch構文
+                String fileName = "hoge.txt"; // ファイル名指定
+
+                // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
+                BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
+
+                // 変数lineに1行ずつ読み込むfor文
+                for (String line = in.readLine(); line != null; line = in.readLine()) {
+                    boolean result = (new Unifier()).unify(arg[0],line);
+                    if(result == true) {
+                        System.out.println(result);
+                    }
+                }
+                in.close();  // ファイルを閉じる
+            } catch (IOException e) {
+                e.printStackTrace(); // 例外が発生した所までのスタックトレースを表示
+            }
+
+        }
     }
 }
 
@@ -71,11 +88,13 @@ class Unifier {
     }
 
     public boolean unify(String string1,String string2){
-        System.out.println(string1);
-        System.out.println(string2);
-    
+
         // 同じなら成功
-        if(string1.equals(string2)) return true;
+        if(string1.equals(string2)) {
+            System.out.println(string1);
+            System.out.println(string2);
+            return true;
+        }
     
         // 各々トークンに分ける
         st1 = new StringTokenizer(string1);
@@ -101,6 +120,8 @@ class Unifier {
     
         // 最後まで O.K. なら成功
         System.out.println(vars.toString());
+        System.out.println(string1);
+        System.out.println(string2);
         return true;
     }
 
