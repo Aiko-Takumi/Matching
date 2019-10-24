@@ -3,7 +3,7 @@
 
 
 
-  変数:前に？をつける．  
+  変数:前に？をつける．
 
   Examle:
   % Unify "Takayuki" "Takayuki"
@@ -42,48 +42,110 @@
 
   ***/
 
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 class Unify {
     public static void main(String arg[]){
-    if(arg.length != 2){
-        System.out.println("Usgae : % Unify [string1] [string2]");
-    } else {
-        System.out.println((new Unifier()).unify(arg[0],arg[1]));
-    }
+        if(arg.length < 2){//2に変更
+            System.out.println("Usgae : % Unify [fileName] [string1] ([string2] ...)");
+        } else {
+            try {    // ファイル読み込みに失敗した時の例外処理のためのtry-catch構文
+            	//配列をリスト化し先頭要素のfileNameを取得
+                List<String> list = new ArrayList<String>(Arrays.asList(arg));
+                String fileName = list.remove(0);
+                arg = (String[])list.toArray(new String[list.size()]);
+
+                List<Unifier> unifiers = new ArrayList<>();
+                for(String query : arg){
+                    // 変数lineに1行ずつ読み込むfor文
+                    if(unifiers.size() == 0){
+                        // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
+                        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
+                        for (String line = in.readLine(); line != null; line = in.readLine()) {
+                        // boolean result = (new Unifier()).unify(arg[0],line);
+                            Unifier unifier = new Unifier();
+                            boolean result = unifier.unify(query,line);
+                            if(result == true) {
+                                //System.out.println(query);
+                                //System.out.println(result);
+                                unifiers.add(unifier);
+
+                                for(Unifier unif : unifiers){
+                                    System.out.println("\t"+unif.vars);
+                                }
+                            }
+                        }
+                        in.close();  // ファイルを閉じる
+                    }
+                    for(Unifier unifier : unifiers){
+                        // 文字コードUTF-8を指定してBufferedReaderオブジェクトを作る
+                        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
+                        for (String line = in.readLine(); line != null; line = in.readLine()) {
+                        // boolean result = (new Unifier()).unify(arg[0],line);
+                            boolean result = unifier.unify(query,line);
+                            if(result == true) {
+                                //System.out.println(query);
+                                //System.out.println(result);
+                                for(Unifier unif : unifiers){
+                                    System.out.println("\t"+unif.vars);
+                                }
+                            }
+                        }
+                        in.close();  // ファイルを閉じる
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace(); // 例外が発生した所までのスタックトレースを表示
+            }
+        }
     }
 }
 
 class Unifier {
     StringTokenizer st1;
-    String buffer1[];    
+    String buffer1[];
     StringTokenizer st2;
     String buffer2[];
     HashMap<String,String> vars;
-    
+
     Unifier(){
         vars = new HashMap<String,String>();
     }
 
+    public void setVars(HashMap<String, String> bindings){
+        this.vars = bindings;
+    }
     public boolean unify(String string1,String string2,HashMap<String,String> bindings){
         this.vars = bindings;
         return unify(string1,string2);
     }
 
     public boolean unify(String string1,String string2){
-        System.out.println(string1);
-        System.out.println(string2);
-    
+
+        // System.out.println(string1+":"+string2);
         // 同じなら成功
-        if(string1.equals(string2)) return true;
-    
+        if(string1.equals(string2)) {
+            System.out.println(string1);
+            System.out.println(string2);
+            return true;
+        }
+
         // 各々トークンに分ける
         st1 = new StringTokenizer(string1);
         st2 = new StringTokenizer(string2);
-    
+
         // 数が異なったら失敗
         if(st1.countTokens() != st2.countTokens()) return false;
-    
+
         // 定数同士
         int length = st1.countTokens();
         buffer1 = new String[length];
@@ -97,10 +159,12 @@ class Unifier {
                 return false;
             }
         }
-    
-    
+
+
         // 最後まで O.K. なら成功
         System.out.println(vars.toString());
+        System.out.println(string1);
+        System.out.println(string2);
         return true;
     }
 
@@ -139,7 +203,7 @@ class Unifier {
             }
         }
     }
-    
+
     void replaceBindings(String preString,String postString){
     Iterator<String> keys;
     for(keys = vars.keySet().iterator(); keys.hasNext();){
@@ -149,11 +213,11 @@ class Unifier {
         }
     }
     }
-    
-    
+
+
     boolean var(String str1){
     // 先頭が ? なら変数
     return str1.startsWith("?");
     }
-
 }
+
