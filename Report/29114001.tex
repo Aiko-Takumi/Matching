@@ -1,0 +1,143 @@
+\documentclass[a4j]{jarticle}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定
+
+\title{知能プログラミング演習II 課題2}
+\author{グループ02\\
+  29114001 愛甲拓海\\}
+\date{2019年10月7日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} rep2
+\paragraph{グループ} グループ02
+\paragraph{メンバー}
+\begin{tabular}{|c|c|c|}
+  \hline
+  学生番号&氏名&貢献度比率\\
+  \hline\hline
+  29114001&愛甲拓海&00\\
+  \hline
+  29114002&青木侑省&00\\
+  \hline
+  29114073&末永彩羽&00\\
+  \hline
+  29114156&近藤拓海&00\\
+  \hline
+  29119032&古川翔也&00\\
+  \hline
+\end{tabular}
+
+
+
+\section{課題の説明}
+\begin{description}
+\item[課題2-1] MatchingクラスまたはUnifyクラスを用い，パターンで検索可能な簡単なデータベースを作成せよ．
+\item[課題2-2]     自分たちの興味ある分野の知識についてデータセットを作り，上記2-1で実装したデータベースに登録せよ．また，検索実行例を示せ．どのような方法でデータセットを登録しても構わない．
+\end{description}
+
+
+\section{課題2-1}
+\begin{screen}
+  MatchingクラスまたはUnifyクラスを用い，パターンで検索可能な簡単なデータベースを作成せよ．
+\end{screen}
+
+\subsection{手法}
+
+
+\begin{enumerate}
+\item 入力されたパターンをあたえられている知識セットのなかから探索し、マッチする表現を変数名とともに返す
+\end{enumerate}
+
+ハッシュマップに変数束縛を残しながら探索することで複数パターンに対策している。
+
+\subsection{実装}
+
+まず、プログラムに含まれるクラスはもとのコード自体から変化していない。
+
+ mainメソッドの実装で自身が変更を加えた部分をソースコード\ref{src:Unify}に示す。
+
+\begin{lstlisting}[caption=Unifyメソッド,label=src:Unify]
+        if(arg.length < 2){
+            System.out.println("Usgae : % Unify [fileName] [string1] ([string2] ...)");
+        } else {
+            try {
+            	//配列をリスト化し先頭要素のfileNameを取得
+                List<String> list = new ArrayList<String>(Arrays.asList(arg));//この行から
+                String fileName = list.remove(0);
+                arg = (String[])list.toArray(new String[list.size()]);//ここまでの3行
+
+                List<Unifier> unifiers = new ArrayList<>();
+                for(String query : arg){
+
+                (以下省略)
+\end{lstlisting}
+
+コマンドライン引数で実行時にファイルを指定できるようにしようと考えた。
+しかし最終文にあるように、グループメンバーがすでに拡張for文を用いた文を書いていたためにそちらに合わせるようにしてコマンドライン引数のString配列から先頭要素を取りだそうとしたときに不都合が生じるので、一時的にリスト化し、先頭をremoveによって取り出して配列に戻す、といった操作を取った。
+
+mainメソッドの探索手法に実装については、グループレポートを参考にされたい。
+
+
+
+\subsection{実行例}
+Unifyクラスに引数"?x is a boy" "?x loves ?y" を指定した実行結果を以下に示す。
+
+\begin{lstlisting}
+{(Taro, Jiro), (Jiro, Hanako)}
+
+\end{lstlisting}
+
+
+\subsection{考察}
+今回探索部分については多くを近藤くんにまかせてしまった。自分で考えていた構図では「再帰呼び出しでうまくいくメソッドをうまく作れないものか」と考えていたが考えがまとまらず、実装するに至らなかった。
+
+
+\section{課題2-2}
+\begin{screen}
+  自分たちの興味ある分野の知識についてデータセットを作り，上記2-1で実装したデータベースに登録せよ．また，検索実行例を示せ．どのような方法でデータセットを登録しても構わない．
+\end{screen}
+
+\subsection{考察}
+\begin{lstlisting}
+//入力はUnify "?x is a boy" "?x likes ?y"
+
+{(Nobita, Sizuka)}
+
+\end{lstlisting}
+
+
+\section{感想}
+前期の演習で行ったprologが思い出される演習であった。prolog自体も得意ではなかったが、prologの偉大さがよくわかる演習になった。知識表現をすることはこれからも求められる基礎の部分になるだろうが、javaで行うときはどうなるのか考えるいい機会になったと思う。
+
+
+
+
+
+\end{document}
